@@ -1,18 +1,11 @@
-import "./App.css";
-import * as io from "socket.io-client";
-
-const socket = io.connect("http://localhost:3001");
+import GameCanvas from "./components/GameCanvas";
+import SocketProvider from "./context/socketContext";
 
 function App() {
-  const handleSendMessage = () => {
-    // socket.emit("");
-  };
-
   return (
-    <div className="App">
-      <input placeholder="Message..." />
-      <button onClick={handleSendMessage}>Send message</button>
-    </div>
+    <SocketProvider>
+      <GameCanvas />
+    </SocketProvider>
   );
 }
 
