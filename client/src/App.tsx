@@ -1,10 +1,10 @@
-import GameCanvas from "./components/GameCanvas";
+import Game from "./components/Game";
 import SocketProvider from "./context/socketContext";
 
 function App() {
   return (
     <SocketProvider>
-      <GameCanvas />
+      <Game />
     </SocketProvider>
   );
 }
