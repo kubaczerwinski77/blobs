@@ -10,5 +10,6 @@ export const enum Positioning {
 }
 
 export const SPEED = 5;
-export const JUMP_HEIGHT = 10;
+export const JUMP_HEIGHT = 5;
+export const POSITION_OFFSET = 0.01;
 export const cameraOffset = new Vector3(0, 5, 10);

@@ -1,21 +1,26 @@
-import { PublicApi, useBox } from "@react-three/cannon";
+import { PublicApi, Triplet, useBox, useSphere } from "@react-three/cannon";
+import { Sphere } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Ref, useEffect, useMemo, useRef } from "react";
+import { Ref, useContext, useEffect, useMemo, useRef } from "react";
 import { BufferGeometry, Material, Mesh, Vector3 } from "three";
+import { SocketContext } from "../context/socketContext";
 import { usePersonControls } from "../hooks/use-person-controls";
 import { cameraOffset, JUMP_HEIGHT, SPEED } from "../utils/constants";
+import { detectChange, getRandomPosition } from "../utils/positioning";
 
 const Player = () => {
-  const [ref, api] = useBox(() => ({ mass: 1, position: [0, 3, 0] })) as [
-    Ref<Mesh<BufferGeometry, Material>>,
-    PublicApi
-  ];
+  const [ref, api] = useSphere(() => ({
+    mass: 1,
+    position: getRandomPosition(),
+  })) as [Ref<Mesh<BufferGeometry, Material>>, PublicApi];
+
+  const socket = useContext(SocketContext);
 
   const { camera } = useThree();
   const { forward, backward, left, right, jump } = usePersonControls();
 
-  const velocity = useRef([0, 0, 0]);
-  const position = useRef([0, 0, 0]);
+  const velocity = useRef<Triplet>([0, 0, 0]);
+  const position = useRef<Triplet>([0, 0, 0]);
 
   const direction = useMemo(() => {
     let frontVector = new Vector3(0, 0, 0);
@@ -39,9 +44,18 @@ const Player = () => {
   }, [api.velocity]);
 
   useEffect(() => {
-    const unsubscribe = api.position.subscribe((v) => (position.current = v));
+    const unsubscribe = api.position.subscribe((v) => {
+      if (detectChange(position.current, v)) {
+        const eventPayload = {
+          id: socket?.id,
+          pos: v,
+        };
+        socket?.emitEvent("position_change", eventPayload);
+      }
+      return (position.current = v);
+    });
     return unsubscribe;
-  }, [api.position]);
+  }, [api.position, socket?.id, socket]);
 
   useFrame(() => {
     api.velocity.set(direction.x, velocity.current[1], direction.z);
@@ -55,9 +69,11 @@ const Player = () => {
       .add(cameraOffset);
   });
 
+  return <Sphere ref={ref} args={[0.5, 1]} />;
+
   return (
     <mesh ref={ref}>
-      <boxGeometry />
+      <sphereGeometry />
       <meshLambertMaterial color="#815B5B" />
     </mesh>
   );

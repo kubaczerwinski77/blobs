@@ -1,8 +1,11 @@
-import { Socket } from "socket.io-client";
-
 export interface ISocketType {
-  socket: Socket;
+  id: string;
+  emitEvent: (eventName: string, payload: unknown) => void;
   connected: boolean;
-  lastPong: string | null;
-  sendPing: () => void;
+  players: {
+    [string]: {
+      id: string;
+      position: [number, number, number];
+    };
+  };
 }
