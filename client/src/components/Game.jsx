@@ -2,6 +2,7 @@ import { KeyboardControls, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Debug, Physics } from "@react-three/rapier";
 import React from "react";
+import { keyMap } from "../utils/keyboard";
 import Ground from "./Ground";
 import { Player } from "./Player";
 import PressurePlate from "./PressurePlate";
@@ -67,15 +68,7 @@ const plates = [
 
 const Game = () => {
   return (
-    <KeyboardControls
-      map={[
-        { name: "forward", keys: ["ArrowUp", "w", "W"] },
-        { name: "backward", keys: ["ArrowDown", "s", "S"] },
-        { name: "left", keys: ["ArrowLeft", "a", "A"] },
-        { name: "right", keys: ["ArrowRight", "d", "D"] },
-        { name: "jump", keys: ["Space"] },
-      ]}
-    >
+    <KeyboardControls map={keyMap}>
       <Canvas
         style={{ height: "100vh" }}
         camera={{ fov: 90, position: [0, 5, 5] }}

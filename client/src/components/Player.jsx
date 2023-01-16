@@ -2,7 +2,12 @@ import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Sphere, useKeyboardControls } from "@react-three/drei";
+import {
+  Billboard,
+  Sphere,
+  Text,
+  useKeyboardControls,
+} from "@react-three/drei";
 import { BallCollider, RigidBody, useRapier } from "@react-three/rapier";
 import { Colors } from "../utils/colors";
 
@@ -13,6 +18,7 @@ const sideVector = new THREE.Vector3();
 
 export const Player = () => {
   const ref = useRef();
+  const name = useRef();
   const rapier = useRapier();
   const [, get] = useKeyboardControls();
 
@@ -23,6 +29,8 @@ export const Player = () => {
     // track player movement
     const pos = ref.current.translation();
     state.camera.lookAt(pos);
+    name.current.position.copy(pos);
+    name.current.rotation.copy(state.camera.rotation);
 
     // move player object
     frontVector.set(0, 0, backward - forward);
@@ -39,12 +47,13 @@ export const Player = () => {
     const ray = world.castRay(
       new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 })
     );
-    const grounded = ray && ray.collider && Math.abs(ray.toi) <= 0.5;
-    if (jump && grounded) ref.current.setLinvel({ x: 0, y: 2, z: 0 });
+    const grounded = ray && ray.collider && Math.abs(ray.toi) <= 0.3;
+    if (jump && grounded)
+      ref.current.setLinvel({ x: direction.x, y: 3, z: direction.z });
   });
 
   return (
-    <>
+    <group>
       <RigidBody
         ref={ref}
         colliders={false}
@@ -58,6 +67,11 @@ export const Player = () => {
           <meshToonMaterial color={Colors.PLAYER} />
         </Sphere>
       </RigidBody>
-    </>
+      <Billboard ref={name}>
+        <Text color={Colors.PLAYER} scale={0.2} position={[0, 0.4, 0]}>
+          You
+        </Text>
+      </Billboard>
+    </group>
   );
 };
