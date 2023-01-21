@@ -2,6 +2,8 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const { ClientEvents } = require("./events");
+
 const PORT = 3001;
 
 const app = express();
@@ -17,49 +19,46 @@ const io = new Server(server, {
   },
 });
 
-let players = {};
+const gameData = {
+  players: {},
+};
 
-const addPlayer = (id) => {
-  players = {
-    ...players,
-    [id]: {
-      id,
-      position: [undefined, undefined, undefined],
-      rotation: [undefined, undefined, undefined],
-    },
+const addPlayer = (socketId) => {
+  gameData.players = {
+    ...gameData.players,
+    [String(socketId)]: {},
   };
 };
 
-const removePlayer = (id) => {
-  delete players[id];
+const removePlayer = (socketId) => {
+  delete gameData.players[socketId];
 };
 
-const updatePlayerPositon = (id, position, rotation) => {
-  players = {
-    ...players,
-    [id]: {
-      ...players.id,
-      position,
-      rotation,
-    },
+const playerMoved = (socketId, newPosition) => {
+  gameData.players[socketId] = {
+    position: newPosition,
   };
 };
 
-io.on("connection", (socket) => {
+// user joined the server
+io.on(ClientEvents.CONNECT, (socket) => {
+  console.log(`Player joined: ${socket.id}`);
   addPlayer(socket.id);
 
-  socket.emit("player_joined", {
-    players,
+  console.log("gameData", gameData);
+
+  // receive user moved
+  socket.on(ClientEvents.SET_MOVE, (data) => {
+    // console.log(data);
+    playerMoved(socket.id, data.pos);
+    console.log(gameData.players);
   });
 
-  socket.on("position_change", (payload) => {
-    // console.log(`Player ${payload.id} changed position ${payload.pos}`);
-    updatePlayerPositon(payload.id, payload.pos, payload.rot);
-    socket.broadcast.emit("players_changed", { players });
-  });
-
-  socket.on("disconnect", () => {
+  // user left the server
+  socket.on(ClientEvents.DISCONNECT, () => {
+    console.log(`Player left:   ${socket.id}`);
     removePlayer(socket.id);
+    console.log("gameData", gameData);
   });
 });
 

@@ -10,13 +10,14 @@ import {
 } from "@react-three/drei";
 import { BallCollider, RigidBody, useRapier } from "@react-three/rapier";
 import { Colors } from "../utils/colors";
+import { PlayerData } from "../utils/constants";
+import { ClientEvents } from "../common/events";
 
-const SPEED = 3;
 const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
 const sideVector = new THREE.Vector3();
 
-export const Player = () => {
+export const Player = ({ socket, seconds }) => {
   const ref = useRef();
   const name = useRef();
   const rapier = useRapier();
@@ -32,13 +33,19 @@ export const Player = () => {
     name.current.position.copy(pos);
     name.current.rotation.copy(state.camera.rotation);
 
+    // emit move event
+    socket.emit(ClientEvents.SET_MOVE, {
+      id: socket.id,
+      pos,
+    });
+
     // move player object
     frontVector.set(0, 0, backward - forward);
     sideVector.set(left - right, 0, 0);
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
-      .multiplyScalar(SPEED)
+      .multiplyScalar(PlayerData.SPEED)
       .applyEuler(state.camera.rotation);
     ref.current.setLinvel({ x: direction.x, y: velocity.y, z: direction.z });
 
@@ -69,7 +76,7 @@ export const Player = () => {
       </RigidBody>
       <Billboard ref={name}>
         <Text color={Colors.PLAYER} scale={0.2} position={[0, 0.4, 0]}>
-          You
+          {`Your time: ${seconds}`}
         </Text>
       </Billboard>
     </group>
