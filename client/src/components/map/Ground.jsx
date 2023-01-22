@@ -2,8 +2,8 @@ import { useTexture } from "@react-three/drei";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import React from "react";
 import { RepeatWrapping } from "three";
-import grass from "../assets/grass.jpeg";
-import { Colors } from "../utils/colors";
+import { Colors } from "../../utils/colors";
+import grass from "../../assets/grass.jpeg";
 
 const Ground = (props) => {
   const texture = useTexture(grass);

@@ -17,7 +17,7 @@ const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
 const sideVector = new THREE.Vector3();
 
-export const Player = ({ socket }) => {
+export const Player = ({ emitEvent, socketId }) => {
   const ref = useRef();
   const name = useRef();
   const rapier = useRapier();
@@ -34,10 +34,7 @@ export const Player = ({ socket }) => {
     name.current.rotation.copy(state.camera.rotation);
 
     // emit move event
-    socket.emit(ClientEvents.SET_MOVE, {
-      id: socket.id,
-      pos,
-    });
+    emitEvent(ClientEvents.SET_MOVE, pos);
 
     // move player object
     frontVector.set(0, 0, backward - forward);

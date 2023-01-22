@@ -3,15 +3,14 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { ClientEvents, ServerEvents } from "../common/events";
-import { Menu, PLAYERS_REQUIRED } from "../utils/constants";
+import { PLAYERS_REQUIRED } from "../utils/constants";
 
-const Lobby = ({ setMenuState, socket, emitEvent }) => {
+const Lobby = ({ secondsLeft, timerActive, socket, emitEvent }) => {
   const [players, setPlayers] = useState({});
   const waitingForPlayers = Object.keys(players).length < PLAYERS_REQUIRED;
   const isHost = players[socket.id]?.host;
 
   const handleStartGame = () => {
-    setMenuState(Menu.GAME);
     emitEvent(ClientEvents.START_GAME);
   };
 
@@ -52,15 +51,19 @@ const Lobby = ({ setMenuState, socket, emitEvent }) => {
           player.host ? "👑" : "👨🏼‍💻"
         }`}</Text>
       ))}
-      <Button
-        onClick={handleStartGame}
-        colorScheme="teal"
-        isDisabled={!isHost || waitingForPlayers}
-        variant="ghost"
-        size="sm"
-      >
-        Start game
-      </Button>
+      {timerActive ? (
+        <Text>Get ready! The game starts in {secondsLeft} seconds ⏱️</Text>
+      ) : (
+        <Button
+          onClick={handleStartGame}
+          colorScheme="teal"
+          isDisabled={!isHost || waitingForPlayers}
+          variant="ghost"
+          size="sm"
+        >
+          Start game
+        </Button>
+      )}
     </Flex>
   );
 };

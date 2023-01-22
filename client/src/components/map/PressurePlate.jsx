@@ -1,6 +1,6 @@
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import React from "react";
-import { Colors } from "../utils/colors";
+import { Colors } from "../../utils/colors";
 
 const PressurePlate = (props) => {
   const { position, size, handleCollisionDetection } = props;

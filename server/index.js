@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const util = require("util");
 const { Server } = require("socket.io");
 const { ClientEvents, ServerEvents } = require("./events");
 const _ = require("lodash");
@@ -23,6 +24,7 @@ const io = new Server(server, {
 const gameData = {
   players: {},
   started: false,
+  winner: null,
 };
 
 const addPlayer = (player) => {
@@ -37,7 +39,7 @@ const addPlayer = (player) => {
 };
 
 const removePlayer = (socketId) => {
-  if (gameData.players[socketId].host) {
+  if (gameData.players[socketId] && gameData.players[socketId].host) {
     delete gameData.players[socketId];
     changeHost();
   } else {
@@ -47,6 +49,11 @@ const removePlayer = (socketId) => {
 
 const changeHost = () => {
   const playersId = Object.keys(gameData.players);
+
+  if (playersId.length === 0) {
+    return;
+  }
+
   const randomId = playersId[Math.floor(Math.random() * playersId.length)];
   gameData.players[randomId].host = true;
 };
@@ -55,19 +62,38 @@ const startGame = () => {
   gameData.started = true;
 };
 
+const movePlayer = (socketId, newPosition) => {
+  gameData.players[socketId] = {
+    ...gameData.players[socketId],
+    position: newPosition,
+  };
+};
+
 io.on(ClientEvents.CONNECT, (socket) => {
   console.log(`Player connected: ${socket.id}`);
 
   socket.on(ClientEvents.JOIN_SERVER, (username) => {
     console.log(`Player joined:    ${username}`);
     addPlayer({ id: socket.id, username, host: _.isEmpty(gameData.players) });
-    console.log(gameData.players);
+    console.log(
+      util.inspect(gameData.players, {
+        showHidden: true,
+        depth: null,
+        colors: true,
+      })
+    );
     io.emit(ServerEvents.PLAYER_JOINED, gameData.players);
   });
 
   socket.on(ClientEvents.START_GAME, () => {
     console.log("Host starts the game!");
-    // io.emit(ServerEvents.ROUND_STARTED, gameData.players);
+    startGame();
+    io.emit(ServerEvents.ROUND_STARTED, gameData);
+  });
+
+  socket.on(ClientEvents.SET_MOVE, (position) => {
+    movePlayer(socket.id, position);
+    console.log(gameData.players);
   });
 
   socket.on(ClientEvents.DISCONNECT, () => {

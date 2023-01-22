@@ -1,13 +1,8 @@
-import { useTexture } from "@react-three/drei";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import React from "react";
-import { RepeatWrapping } from "three";
-import grass from "../assets/grass.jpeg";
-import { Colors } from "../utils/colors";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { Colors } from "../../utils/colors";
 
 const Wall = (props) => {
-  const texture = useTexture(grass);
-  texture.wrapS = texture.wrapT = RepeatWrapping;
   const { height, position, rotated, length } = props;
 
   return (
