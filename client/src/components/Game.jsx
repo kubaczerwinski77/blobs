@@ -5,7 +5,7 @@ import React from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { ServerEvents } from "../common/events";
+import { ClientEvents, ServerEvents } from "../common/events";
 import { keyMap } from "../utils/keyboard";
 import Ground from "./Ground";
 import { Player } from "./Player";
@@ -58,47 +58,36 @@ const walls = [
 ];
 
 const Game = ({ socket }) => {
-  const [started, setStarted] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [gameData, setGameData] = useState({});
+  const [players, setPlayers] = useState({ [socket.id]: {} });
 
   useEffect(() => {
+    socket.emit(ClientEvents.JOIN_SERVER);
+
     socket.on(ServerEvents.PLAYER_JOINED, (data) => {
-      setGameData(data);
-      console.log(data);
+      setPlayers(data);
+    });
+
+    socket.on(ServerEvents.PLAYER_LEFT, (data) => {
+      setPlayers(data);
     });
 
     return () => {
       socket.off(ServerEvents.PLAYER_JOINED);
+      socket.off(ServerEvents.PLAYER_LEFT);
     };
   }, [socket]);
-
-  useEffect(() => {
-    let interval = null;
-    if (started) {
-      interval = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
-      }, 1000);
-    } else if (!started && seconds !== 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [started, seconds]);
 
   const plates = useMemo(
     () => [
       {
         size: [1, 1],
         position: [4, -2],
-        handleCollisionDetection: () => setStarted(false),
+        handleCollisionDetection: () => {},
       },
       {
         size: [1, 1],
         position: [-4, 2],
-        handleCollisionDetection: () => {
-          setStarted(true);
-          setSeconds(0);
-        },
+        handleCollisionDetection: () => {},
       },
     ],
     []
@@ -115,9 +104,9 @@ const Game = ({ socket }) => {
         <directionalLight castShadow intensity={0.8} position={[10, 10, 10]} />
         <OrbitControls />
         <Physics>
-          {started && <Debug />}
+          <Debug />
           <Ground />
-          <Player socket={socket} seconds={seconds} />
+          <Player socket={socket} />
           {walls.map((wall) => (
             <Wall key={wall.position} {...wall} />
           ))}

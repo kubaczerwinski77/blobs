@@ -17,7 +17,7 @@ const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
 const sideVector = new THREE.Vector3();
 
-export const Player = ({ socket, seconds }) => {
+export const Player = ({ socket }) => {
   const ref = useRef();
   const name = useRef();
   const rapier = useRapier();
@@ -76,7 +76,7 @@ export const Player = ({ socket, seconds }) => {
       </RigidBody>
       <Billboard ref={name}>
         <Text color={Colors.PLAYER} scale={0.2} position={[0, 0.4, 0]}>
-          {`Your time: ${seconds}`}
+          You
         </Text>
       </Billboard>
     </group>
