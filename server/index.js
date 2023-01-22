@@ -37,7 +37,18 @@ const addPlayer = (player) => {
 };
 
 const removePlayer = (socketId) => {
-  delete gameData.players[socketId];
+  if (gameData.players[socketId].host) {
+    delete gameData.players[socketId];
+    changeHost();
+  } else {
+    delete gameData.players[socketId];
+  }
+};
+
+const changeHost = () => {
+  const playersId = Object.keys(gameData.players);
+  const randomId = playersId[Math.floor(Math.random() * playersId.length)];
+  gameData.players[randomId].host = true;
 };
 
 const startGame = () => {
@@ -66,34 +77,6 @@ io.on(ClientEvents.CONNECT, (socket) => {
     console.log(gameData.players);
   });
 });
-
-// // user joined the server
-// io.on(ClientEvents.CONNECT, (socket) => {
-//   socket.on(ClientEvents.JOIN_SERVER, (username) => {
-//     // console.log(`Player joined: ${socket.id}`);
-//     // addPlayer(socket.id);
-
-//     // // notify that players list changed
-//     // socket.broadcast.emit(ServerEvents.PLAYER_JOINED, gameData.players);
-//     // console.log(gameData.players);
-//   });
-
-//   // // receive user moved
-//   // socket.on(ClientEvents.SET_MOVE, (data) => {
-//   //   playerMoved(socket.id, data.pos);
-
-//   //   // emit event that player moved
-//   //   socket.emit(ServerEvents.PLAYER_MOVED, gameData);
-//   // });
-
-//   // user left the server
-//   socket.on(ClientEvents.DISCONNECT, () => {
-//     // console.log(`Player left:   ${socket.id}`);
-//     // removePlayer(socket.id);
-//     // socket.emit(ServerEvents.PLAYER_LEFT, gameData.players);
-//     // console.log(gameData.players);
-//   });
-// });
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
