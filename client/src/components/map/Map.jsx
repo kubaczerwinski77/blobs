@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import PressurePlate from "./PressurePlate";
 import Wall from "./Wall";
 import Ground from "./Ground";
+import { ClientEvents } from "../../common/events";
 
 const walls = [
   {
@@ -48,20 +49,18 @@ const walls = [
   },
 ];
 
-const Map = () => {
+const Map = ({ emitEvent }) => {
   const plates = useMemo(
     () => [
       {
         size: [1, 1],
         position: [4, -2],
-        handleCollisionDetection: () => {},
-      },
-      {
-        size: [1, 1],
-        position: [-4, 2],
-        handleCollisionDetection: () => {},
+        handleCollisionDetection: (data) => {
+          emitEvent(ClientEvents.WIN, data.rigidBodyObject.name);
+        },
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

@@ -14,12 +14,14 @@ const emitEvent = (eventName, eventPayload) => {
 
 function App() {
   const [menuState, setMenuState] = useState(Menu.GET_USERNAME);
-  const [seconds, setSeconds] = useState(5);
+  const [seconds, setSeconds] = useState(2);
   const [active, setActive] = useState(false);
+  const [gameData, setGameData] = useState({});
 
   useEffect(() => {
-    socket.on(ServerEvents.ROUND_STARTED, () => {
+    socket.on(ServerEvents.ROUND_STARTED, (data) => {
       setActive(true);
+      setGameData(data);
     });
     return () => {
       socket.off(ServerEvents.ROUND_STARTED);
@@ -54,7 +56,15 @@ function App() {
         />
       );
     case Menu.GAME:
-      return <Game socketId={socket.id} emitEvent={emitEvent} />;
+      return (
+        <Game
+          socket={socket}
+          socketId={socket.id}
+          emitEvent={emitEvent}
+          gameData={gameData}
+          setMenuState={setMenuState}
+        />
+      );
     default:
       return null;
   }

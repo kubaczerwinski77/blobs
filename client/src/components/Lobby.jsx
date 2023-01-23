@@ -14,8 +14,6 @@ const Lobby = ({ secondsLeft, timerActive, socket, emitEvent }) => {
     emitEvent(ClientEvents.START_GAME);
   };
 
-  console.log("players", players);
-
   useEffect(() => {
     socket.on(ServerEvents.PLAYER_JOINED, (data) => {
       setPlayers(data);

@@ -1,6 +1,6 @@
 export const Colors = {
-  PLAYER: "#FFBCD1",
-  GROUND: "#6867AC",
-  WALL: "#A267AC",
-  OBSTACLE: "#CE7BB0",
+  PLAYER: "#EDF2F7",
+  GROUND: "#38B2AC",
+  WALL: "#B2F5EA",
+  OBSTACLE: "#2C7A7B",
 };

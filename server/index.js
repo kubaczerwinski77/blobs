@@ -5,6 +5,8 @@ const util = require("util");
 const { Server } = require("socket.io");
 const { ClientEvents, ServerEvents } = require("./events");
 const _ = require("lodash");
+const { startGame, endGame } = require("./game");
+const { addPlayer, movePlayer, removePlayer } = require("./players");
 
 const PORT = 3001;
 
@@ -27,54 +29,16 @@ const gameData = {
   winner: null,
 };
 
-const addPlayer = (player) => {
-  gameData.players = {
-    ...gameData.players,
-    [player.id]: {
-      id: player.id,
-      username: player.username,
-      host: player.host,
-    },
-  };
-};
-
-const removePlayer = (socketId) => {
-  if (gameData.players[socketId] && gameData.players[socketId].host) {
-    delete gameData.players[socketId];
-    changeHost();
-  } else {
-    delete gameData.players[socketId];
-  }
-};
-
-const changeHost = () => {
-  const playersId = Object.keys(gameData.players);
-
-  if (playersId.length === 0) {
-    return;
-  }
-
-  const randomId = playersId[Math.floor(Math.random() * playersId.length)];
-  gameData.players[randomId].host = true;
-};
-
-const startGame = () => {
-  gameData.started = true;
-};
-
-const movePlayer = (socketId, newPosition) => {
-  gameData.players[socketId] = {
-    ...gameData.players[socketId],
-    position: newPosition,
-  };
-};
-
 io.on(ClientEvents.CONNECT, (socket) => {
   console.log(`Player connected: ${socket.id}`);
 
   socket.on(ClientEvents.JOIN_SERVER, (username) => {
     console.log(`Player joined:    ${username}`);
-    addPlayer({ id: socket.id, username, host: _.isEmpty(gameData.players) });
+    addPlayer(gameData, {
+      id: socket.id,
+      username,
+      host: _.isEmpty(gameData.players),
+    });
     console.log(
       util.inspect(gameData.players, {
         showHidden: true,
@@ -87,18 +51,26 @@ io.on(ClientEvents.CONNECT, (socket) => {
 
   socket.on(ClientEvents.START_GAME, () => {
     console.log("Host starts the game!");
-    startGame();
+    startGame(gameData);
     io.emit(ServerEvents.ROUND_STARTED, gameData);
   });
 
   socket.on(ClientEvents.SET_MOVE, (position) => {
-    movePlayer(socket.id, position);
-    console.log(gameData.players);
+    movePlayer(gameData, socket.id, _.values(position));
+    socket.broadcast.emit(ServerEvents.PLAYER_MOVED, gameData.players);
+  });
+
+  socket.on(ClientEvents.WIN, (id) => {
+    console.log("Game is ended, the winner is", id);
+    if (!gameData.winner) {
+      io.emit(ServerEvents.PLAYER_WON, gameData.players[id]);
+    }
+    endGame(gameData, id);
   });
 
   socket.on(ClientEvents.DISCONNECT, () => {
     console.log(`Player left:      ${socket.id}`);
-    removePlayer(socket.id);
+    removePlayer(gameData, socket.id);
     io.emit(ServerEvents.PLAYER_LEFT, gameData.players);
     console.log(gameData.players);
   });
