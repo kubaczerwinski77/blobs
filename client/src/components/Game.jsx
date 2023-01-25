@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { KeyboardControls, OrbitControls, Sky } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Debug, Physics } from "@react-three/rapier";
+import { Physics } from "@react-three/rapier";
 import { keyMap } from "../utils/keyboard";
 import Map from "./map/Map";
 import { Player } from "./Player";
