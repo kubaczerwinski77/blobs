@@ -12,6 +12,7 @@ import { BallCollider, RigidBody, useRapier } from "@react-three/rapier";
 import { Colors } from "../utils/colors";
 import { PlayerData } from "../utils/constants";
 import { ClientEvents, ServerEvents } from "../common/events";
+import { Vector3 } from "three";
 
 const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
@@ -26,6 +27,7 @@ export const Player = ({
 }) => {
   const ref = useRef();
   const name = useRef();
+  const vel = useRef(new Vector3());
   const rapier = useRapier();
   const [, get] = useKeyboardControls();
   const [winner, setWinner] = useState();
@@ -54,7 +56,10 @@ export const Player = ({
     name.current.rotation.copy(state.camera.rotation);
 
     // emit move event
-    emitEvent(ClientEvents.SET_MOVE, pos);
+    if (!vel.current.equals(velocity)) {
+      emitEvent(ClientEvents.SET_MOVE, pos);
+      vel.current = velocity;
+    }
 
     if (!winner) {
       // move player object
