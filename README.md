@@ -1,10 +1,11 @@
-## The Blobs
+# The Blobs ⚾️
 
-A 3D multiplayer game with physics in which the player takes on the role of a ball and competes against other players in an obstacle race. Push, jump and move towards the finish line. As you can probably guess, first come, first served. 
+A 3D multiplayer game with physics in which the player takes on the role of a ball and competes against other players in an obstacle race 🏎️ 
+Push, jump and move towards the finish line. As you can probably guess, first come, first served. 
 
 ## Project Status
 
-The project is at the MVP stage, I plan to develop it further by adding more complex maps and obstacles, textures, scoreboard, advanced interactions between players.... there are many ideas, in my free time I plan to implement them.
+The project is at the MVP stage ⭐️ I plan to develop it further by adding more complex maps and obstacles, textures, scoreboard, advanced interactions between players.... there are many ideas, in my free time I plan to implement them 🚀
 
 ## Project Screen Shots
 
@@ -33,5 +34,7 @@ To Visit App:
 ## Reflection
 
 The project was created as part of the Web Systems Programming course. My goal was to create something using websockets and a library for 3D rendering. I had never had anything to do with either of these things before. 
+
 I used Socket.IO to handle the websockets, wrote a simple backend in Node.js + Express.js and took to creating the frontend. I relied on React + Three.js, I wanted to see how the two work together and I have to admit that it works quite well and it's fun to write apps on such a stack.
+
 In the near future I plan to deploy the project to test how it already works in practice between different devices.
