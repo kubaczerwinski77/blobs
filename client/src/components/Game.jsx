@@ -17,7 +17,7 @@ import _ from "lodash";
 
 const Game = ({ socket, socketId, emitEvent, gameData, setMenuState }) => {
   const username = gameData.players[socketId]?.username;
-  const startPos = gameData.players[socketId]?.startPos;
+  const startPosition = gameData.players[socketId]?.startPosition;
   const [nick, setNick] = useState("");
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Game = ({ socket, socketId, emitEvent, gameData, setMenuState }) => {
             emitEvent={emitEvent}
             socketId={socketId}
             username={username}
-            startPos={startPos}
+            startPosition={startPosition}
             socket={socket}
           />
           <Enemies socket={socket} gameData={gameData} />

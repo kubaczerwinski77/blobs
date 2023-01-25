@@ -42,8 +42,8 @@ exports.movePlayer = (gameData, socketId, newPosition) => {
 };
 
 exports.defaultPositions = [
-  [4, 0.5, 2],
-  [3, 0.5, 2],
-  [4, 0.5, 1],
-  [3, 0.5, 1],
+  [-4, 0.5, -2],
+  [-3, 0.5, -2],
+  [-4, 0.5, -1],
+  [-3, 0.5, -1],
 ];

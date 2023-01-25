@@ -22,7 +22,7 @@ export const Player = ({
   emitEvent,
   socketId,
   username,
-  startPos = [-4, 1, -2],
+  startPosition = [-4, 1, -2],
 }) => {
   const ref = useRef();
   const name = useRef();
@@ -85,7 +85,7 @@ export const Player = ({
         colliders={false}
         mass={10}
         type="dynamic"
-        position={startPos}
+        position={startPosition}
         enabledRotations={[false, false, false]}
         name={socketId}
       >

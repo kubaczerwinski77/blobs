@@ -34,11 +34,8 @@ const gameData = {
   winner: null,
 };
 
-let connections = 0;
-
 io.on(ClientEvents.CONNECT, (socket) => {
   console.log(`[SOCKET] Client connected: ${socket.id}`);
-  connections += 1;
 
   socket.on(ClientEvents.JOIN_SERVER, (username) => {
     console.log(`[INFO] Player joined: ${username}`);
@@ -46,7 +43,7 @@ io.on(ClientEvents.CONNECT, (socket) => {
       id: socket.id,
       username,
       host: _.isEmpty(gameData.players),
-      startPosition: defaultPositions[connections - 1],
+      startPosition: defaultPositions[_.keys(gameData.players).length],
     });
     io.emit(ServerEvents.PLAYER_JOINED, gameData.players);
   });
@@ -72,7 +69,6 @@ io.on(ClientEvents.CONNECT, (socket) => {
 
   socket.on(ClientEvents.DISCONNECT, () => {
     console.log(`[SOCKET] Client left: ${socket.id}`);
-    connections -= 1;
     removePlayer(gameData, socket.id);
     io.emit(ServerEvents.PLAYER_LEFT, gameData.players);
   });
