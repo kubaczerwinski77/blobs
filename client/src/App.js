@@ -14,7 +14,7 @@ const emitEvent = (eventName, eventPayload) => {
 
 function App() {
   const [menuState, setMenuState] = useState(Menu.GET_USERNAME);
-  const [seconds, setSeconds] = useState(2);
+  const [seconds, setSeconds] = useState(5);
   const [active, setActive] = useState(false);
   const [gameData, setGameData] = useState({});
 
@@ -53,6 +53,8 @@ function App() {
           emitEvent={emitEvent}
           secondsLeft={seconds}
           timerActive={active}
+          setSeconds={setSeconds}
+          setActive={setActive}
         />
       );
     case Menu.GAME:

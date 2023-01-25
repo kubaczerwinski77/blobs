@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 changeHost = (gameData) => {
   const playersId = Object.keys(gameData.players);
 
@@ -16,6 +18,7 @@ exports.addPlayer = (gameData, player) => {
       id: player.id,
       username: player.username,
       host: player.host,
+      startPosition: player.startPosition,
     },
   };
 };
@@ -30,8 +33,17 @@ exports.removePlayer = (gameData, socketId) => {
 };
 
 exports.movePlayer = (gameData, socketId, newPosition) => {
-  gameData.players[socketId] = {
-    ...gameData.players[socketId],
-    position: newPosition,
-  };
+  if (_.has(gameData.players, socketId)) {
+    gameData.players[socketId] = {
+      ...gameData.players[socketId],
+      position: newPosition,
+    };
+  }
 };
+
+exports.defaultPositions = [
+  [4, 0.5, 2],
+  [3, 0.5, 2],
+  [4, 0.5, 1],
+  [3, 0.5, 1],
+];

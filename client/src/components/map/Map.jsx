@@ -52,7 +52,7 @@ const walls = [
 
 const fences = [
   {
-    height: 0.2,
+    height: 0.4,
     length: 2.5,
     rotated: false,
     position: [-1.25, 0],

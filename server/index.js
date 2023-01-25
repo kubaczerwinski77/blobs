@@ -5,8 +5,13 @@ const util = require("util");
 const { Server } = require("socket.io");
 const { ClientEvents, ServerEvents } = require("./events");
 const _ = require("lodash");
-const { startGame, endGame } = require("./game");
-const { addPlayer, movePlayer, removePlayer } = require("./players");
+const { startGame, endGame, restartGame } = require("./game");
+const {
+  addPlayer,
+  movePlayer,
+  removePlayer,
+  defaultPositions,
+} = require("./players");
 
 const PORT = 3001;
 
@@ -29,28 +34,25 @@ const gameData = {
   winner: null,
 };
 
+let connections = 0;
+
 io.on(ClientEvents.CONNECT, (socket) => {
-  console.log(`Player connected: ${socket.id}`);
+  console.log(`[SOCKET] Client connected: ${socket.id}`);
+  connections += 1;
 
   socket.on(ClientEvents.JOIN_SERVER, (username) => {
-    console.log(`Player joined:    ${username}`);
+    console.log(`[INFO] Player joined: ${username}`);
     addPlayer(gameData, {
       id: socket.id,
       username,
       host: _.isEmpty(gameData.players),
+      startPosition: defaultPositions[connections - 1],
     });
-    console.log(
-      util.inspect(gameData.players, {
-        showHidden: true,
-        depth: null,
-        colors: true,
-      })
-    );
     io.emit(ServerEvents.PLAYER_JOINED, gameData.players);
   });
 
   socket.on(ClientEvents.START_GAME, () => {
-    console.log("Host starts the game!");
+    console.log("[INFO] Host starts the game!");
     startGame(gameData);
     io.emit(ServerEvents.ROUND_STARTED, gameData);
   });
@@ -61,21 +63,21 @@ io.on(ClientEvents.CONNECT, (socket) => {
   });
 
   socket.on(ClientEvents.WIN, (id) => {
-    console.log("Game is ended, the winner is", id);
-    if (!gameData.winner) {
+    if (!gameData.winner && id) {
+      console.log(`[INFO] Player with id ${id} won the game!`);
       io.emit(ServerEvents.PLAYER_WON, gameData.players[id]);
+      endGame(gameData, id);
     }
-    endGame(gameData, id);
   });
 
   socket.on(ClientEvents.DISCONNECT, () => {
-    console.log(`Player left:      ${socket.id}`);
+    console.log(`[SOCKET] Client left: ${socket.id}`);
+    connections -= 1;
     removePlayer(gameData, socket.id);
     io.emit(ServerEvents.PLAYER_LEFT, gameData.players);
-    console.log(gameData.players);
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`[SERVER] Running on port ${PORT}`);
 });

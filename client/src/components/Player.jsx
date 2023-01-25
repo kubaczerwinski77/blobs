@@ -17,7 +17,13 @@ const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
 const sideVector = new THREE.Vector3();
 
-export const Player = ({ socket, emitEvent, socketId, username }) => {
+export const Player = ({
+  socket,
+  emitEvent,
+  socketId,
+  username,
+  startPos = [-4, 1, -2],
+}) => {
   const ref = useRef();
   const name = useRef();
   const rapier = useRapier();
@@ -79,7 +85,7 @@ export const Player = ({ socket, emitEvent, socketId, username }) => {
         colliders={false}
         mass={10}
         type="dynamic"
-        position={[-4, 2, 2]}
+        position={startPos}
         enabledRotations={[false, false, false]}
         name={socketId}
       >

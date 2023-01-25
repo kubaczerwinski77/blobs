@@ -5,7 +5,14 @@ import { useState } from "react";
 import { ClientEvents, ServerEvents } from "../common/events";
 import { PLAYERS_REQUIRED } from "../utils/constants";
 
-const Lobby = ({ secondsLeft, timerActive, socket, emitEvent }) => {
+const Lobby = ({
+  secondsLeft,
+  timerActive,
+  socket,
+  emitEvent,
+  setActive,
+  setSeconds,
+}) => {
   const [players, setPlayers] = useState({});
   const waitingForPlayers = Object.keys(players).length < PLAYERS_REQUIRED;
   const isHost = players[socket.id]?.host;
@@ -13,6 +20,12 @@ const Lobby = ({ secondsLeft, timerActive, socket, emitEvent }) => {
   const handleStartGame = () => {
     emitEvent(ClientEvents.START_GAME);
   };
+
+  useEffect(() => {
+    setActive(false);
+    setSeconds(5);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     socket.on(ServerEvents.PLAYER_JOINED, (data) => {

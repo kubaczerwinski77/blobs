@@ -5,7 +5,7 @@ import { Sphere } from "@react-three/drei";
 import { Colors } from "../utils/colors";
 import _ from "lodash";
 
-const Enemies = ({ socket }) => {
+const Enemies = ({ socket, gameData }) => {
   const [otherPlayers, setOtherPlayers] = useState({});
 
   useEffect(() => {
