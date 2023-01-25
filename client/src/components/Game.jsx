@@ -65,7 +65,7 @@ const Game = ({ socket, socketId, emitEvent, gameData, setMenuState }) => {
         <OrbitControls />
         <Sky />
         <Physics>
-          <Debug />
+          {/* <Debug /> */}
           <Player
             emitEvent={emitEvent}
             socketId={socketId}
