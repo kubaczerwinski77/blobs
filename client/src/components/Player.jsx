@@ -10,7 +10,7 @@ import {
 } from "@react-three/drei";
 import { BallCollider, RigidBody, useRapier } from "@react-three/rapier";
 import { Colors } from "../utils/colors";
-import { PlayerData } from "../utils/constants";
+import { Map, PlayerData } from "../utils/constants";
 import { ClientEvents, ServerEvents } from "../common/events";
 import { Vector3 } from "three";
 
@@ -75,11 +75,15 @@ export const Player = ({
       // jumping
       const world = rapier.world.raw();
       const ray = world.castRay(
-        new RAPIER.Ray(ref.current.translation(), { x: 0, y: -1, z: 0 })
+        new RAPIER.Ray(ref.current.translation(), Map.RAY)
       );
-      const grounded = ray && ray.collider && Math.abs(ray.toi) <= 0.3;
+      const grounded = ray && ray.collider && Math.abs(ray.toi) <= Map.TOI;
       if (jump && grounded)
-        ref.current.setLinvel({ x: direction.x, y: 3, z: direction.z });
+        ref.current.setLinvel({
+          x: direction.x,
+          y: PlayerData.JUMP_FORCE,
+          z: direction.z,
+        });
     }
   });
 
